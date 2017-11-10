@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ApplicationMonitor.WPF.ViewModels;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +22,26 @@ namespace ApplicationMonitor.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        public MainViewModel MainViewModel { get; private set; } = new MainViewModel();
+
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = MainViewModel;
+        }
+
+        private void OnStartClicked(object sender, RoutedEventArgs e)
+        {
+            MainViewModel.Start();
+        }
+
+        private void OnBrowseClicked(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            if (dialog.ShowDialog().GetValueOrDefault())
+            {
+                MainViewModel.FilePath = dialog.FileName;
+            }
         }
     }
 }

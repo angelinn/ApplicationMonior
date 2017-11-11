@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -30,6 +31,7 @@ namespace ApplicationMonitor.WPF
         {
             InitializeComponent();
             DataContext = MainViewModel;
+            MainViewModel.OnSecondaryProcessStart += OnSecondaryProcessStart;
 
             Application.Current.Exit += OnApplicationExit;
 
@@ -46,6 +48,11 @@ namespace ApplicationMonitor.WPF
                     new System.Windows.Forms.MenuItem("Application Monitor", ResumeApp),
                     new System.Windows.Forms.MenuItem("Monitored application", ResumeMonitored)
                 });
+        }
+
+        private void OnSecondaryProcessStart(object sender, Process e)
+        {
+            notifyIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(e.MainModule.FileName);
         }
 
         private void OnApplicationExit(object sender, ExitEventArgs e)
@@ -76,6 +83,7 @@ namespace ApplicationMonitor.WPF
             try
             {
                 MainViewModel.ShowMonitored(false);
+                Hide();
             }
             catch (Exception ex)
             {
@@ -83,13 +91,15 @@ namespace ApplicationMonitor.WPF
             }
         }
 
-        private void OnStartClicked(object sender, RoutedEventArgs e)
+        private async void OnStartClicked(object sender, RoutedEventArgs e)
         {
             notifyIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(MainViewModel.FilePath);
 
             try
             {
-                MainViewModel.Start();
+                await MainViewModel.StartAsync();
+                MainViewModel.ShowMonitored(false);
+                Hide();
             }
             catch (Exception ex)
             {

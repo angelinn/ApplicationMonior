@@ -33,5 +33,10 @@ namespace ApplicationMonitor.WPF.ViewModels
         {
             applicationMonitoring.Begin(filePath);
         }
+
+        public void ShowMonitored(bool show)
+        {
+            applicationMonitoring.ShowMonitored(show);
+        }
     }
 }

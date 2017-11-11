@@ -22,7 +22,10 @@
                 <Button Grid.Column="1" Content="Browse" Margin="5,0,0,0" Click="OnBrowseClicked" />
             </Grid>
         </GroupBox>
-        <Button Grid.Row="1" Content="Start" Height="30" Width="100" Click="OnStartClicked" />
+        <StackPanel Grid.Row="1">
+            <Button Content="Start" Height="30" Width="100" Click="OnStartClicked" />
+            <Button Content="Hide app" Height="30" Width="100" Click="OnMinimizeMonitoredToTrayClicked" />
+        </StackPanel>
     </Grid>
     
 </Window>

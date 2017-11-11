@@ -28,26 +28,53 @@ namespace ApplicationMonitor.WPF
     {
         public MainViewModel MainViewModel { get; private set; } = new MainViewModel();
 
+        private NotifyIcon notifyIcon;
         public MainWindow()
         {
             InitializeComponent();
             DataContext = MainViewModel;
 
-            NotifyIcon notifyIcon = new NotifyIcon
+            System.Windows.Application.Current.Exit += OnApplicationExit;
+
+            notifyIcon = new NotifyIcon
             {
                 Visible = true,
-                Icon = new Icon("icon.ico")
             };
 
-            notifyIcon.DoubleClick += (s, e) =>
-            {
-                Show();
-                WindowState = WindowState.Normal;
-            };
+            notifyIcon.DoubleClick += ResumeApp;
+
+            notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(
+                new System.Windows.Forms.MenuItem[]
+                {
+                    new System.Windows.Forms.MenuItem("Application Monitor", ResumeApp),
+                    new System.Windows.Forms.MenuItem("Monitored application", ResumeMonitored)
+                });
+        }
+
+        private void OnApplicationExit(object sender, ExitEventArgs e)
+        {
+            MainViewModel.ShowMonitored(true);
+        }
+
+        private void ResumeApp(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = WindowState.Normal;
+        }
+
+        private void ResumeMonitored(object sender, EventArgs e)
+        {
+            MainViewModel.ShowMonitored(true);
+        }
+
+        private void OnMinimizeMonitoredToTrayClicked(object sender, RoutedEventArgs e)
+        {
+            MainViewModel.ShowMonitored(false);
         }
 
         private void OnStartClicked(object sender, RoutedEventArgs e)
         {
+            notifyIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(MainViewModel.FilePath);
             MainViewModel.Start();
         }
 

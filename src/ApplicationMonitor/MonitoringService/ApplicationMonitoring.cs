@@ -11,9 +11,13 @@ namespace MonitoringService
 {
     public class ApplicationMonitoring
     {
-        private Process process;
+        public event EventHandler OnApplicationStarted;
+        public event EventHandler OnApplicationExited;
 
-        public void Begin(string path, int refresh = 30000)
+        private Process process;
+        private string appName;
+
+        public void Begin(string path, string appName = "", int refresh = 30000)
         {
             Launch(path);
 
@@ -47,7 +51,20 @@ namespace MonitoringService
             process = new Process();
             process.StartInfo.WorkingDirectory = Path.GetDirectoryName(path);
             process.StartInfo.FileName = path;
+            process.EnableRaisingEvents = true;
+            process.Exited += OnProcessExited;
             process.Start();
+
+            if (!String.IsNullOrEmpty(appName))
+                process = Process.GetProcessesByName(appName).First();
+
+            OnApplicationStarted?.Invoke(this, new EventArgs());
+        }
+
+        private void OnProcessExited(object sender, EventArgs e)
+        {
+            OnApplicationExited?.Invoke(sender, e);
+            process.Exited -= OnProcessExited;
         }
     }
 }

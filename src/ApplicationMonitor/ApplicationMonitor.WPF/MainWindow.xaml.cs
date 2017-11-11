@@ -10,14 +10,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
-using OpenFile = Microsoft.Win32.OpenFileDialog;
 
 namespace ApplicationMonitor.WPF
 {
@@ -28,15 +25,15 @@ namespace ApplicationMonitor.WPF
     {
         public MainViewModel MainViewModel { get; private set; } = new MainViewModel();
 
-        private NotifyIcon notifyIcon;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
         public MainWindow()
         {
             InitializeComponent();
             DataContext = MainViewModel;
 
-            System.Windows.Application.Current.Exit += OnApplicationExit;
+            Application.Current.Exit += OnApplicationExit;
 
-            notifyIcon = new NotifyIcon
+            notifyIcon = new System.Windows.Forms.NotifyIcon
             {
                 Visible = true,
             };
@@ -64,23 +61,45 @@ namespace ApplicationMonitor.WPF
 
         private void ResumeMonitored(object sender, EventArgs e)
         {
-            MainViewModel.ShowMonitored(true);
+            try
+            {
+                MainViewModel.ShowMonitored(true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void OnMinimizeMonitoredToTrayClicked(object sender, RoutedEventArgs e)
         {
-            MainViewModel.ShowMonitored(false);
+            try
+            {
+                MainViewModel.ShowMonitored(false);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void OnStartClicked(object sender, RoutedEventArgs e)
         {
             notifyIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(MainViewModel.FilePath);
-            MainViewModel.Start();
+
+            try
+            {
+                MainViewModel.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void OnBrowseClicked(object sender, RoutedEventArgs e)
         {
-            OpenFile dialog = new OpenFile();
+            OpenFileDialog dialog = new OpenFileDialog();
             if (dialog.ShowDialog().GetValueOrDefault())
             {
                 MainViewModel.FilePath = dialog.FileName;

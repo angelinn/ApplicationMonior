@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace ApplicationMonitor.WPF.ViewModels
 {
@@ -12,8 +11,49 @@ namespace ApplicationMonitor.WPF.ViewModels
     {
         private readonly ApplicationMonitoring applicationMonitoring = new ApplicationMonitoring();
 
-        public ICommand BrowseCommand { get; set; }
-        public ICommand StartCommand { get; set; }
+        public MainViewModel()
+        {
+            applicationMonitoring.OnApplicationStarted += OnApplicationStarted;
+            applicationMonitoring.OnApplicationExited += OnApplicationExited;
+        }
+
+        private void OnApplicationExited(object sender, EventArgs e)
+        {
+            Log += $"[{DateTime.Now}] Application exited.{Environment.NewLine}";
+        }
+
+        private void OnApplicationStarted(object sender, EventArgs e)
+        {
+            Log += $"[{DateTime.Now}] Application started.{Environment.NewLine}";
+        }
+
+        private string appName;
+        public string AppName
+        {
+            get
+            {
+                return appName;
+            }
+            set
+            {
+                appName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string log;
+        public string Log
+        {
+            get
+            {
+                return log;
+            }
+            set
+            {
+                log = value;
+                OnPropertyChanged();
+            }
+        }
 
         private string filePath;
         public string FilePath
@@ -31,7 +71,7 @@ namespace ApplicationMonitor.WPF.ViewModels
 
         public void Start()
         {
-            applicationMonitoring.Begin(filePath);
+            applicationMonitoring.Begin(filePath, appName);
         }
 
         public void ShowMonitored(bool show)

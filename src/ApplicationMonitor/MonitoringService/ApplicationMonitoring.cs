@@ -12,18 +12,18 @@ namespace MonitoringService
 {
     public class ApplicationMonitoring
     {
-        public event EventHandler OnApplicationStarted;
-        public event EventHandler OnApplicationExited;
+        public event EventHandler<Process> OnApplicationStarted;
+        public event EventHandler<Process> OnApplicationExited;
 
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         private Process process;
         private string appName;
 
-        public void Begin(string path, string appName = "", int refresh = 30000)
+        public async Task BeginAsync(string path, string appName = "", int refresh = 30000)
         {
             this.appName = appName;
-            Launch(path);
+            await LaunchAsync(path);
 
             Task.Run(async () =>
             {
@@ -32,7 +32,7 @@ namespace MonitoringService
                     await Task.Delay(refresh);
 
                     if (process.HasExited)
-                        Launch(path);
+                        await LaunchAsync(path);
                 }
             });
         }
@@ -58,28 +58,46 @@ namespace MonitoringService
             }
         }
 
-        private void Launch(string path)
+        private async Task LaunchAsync(string path)
         {
-            process = new Process();
-            process.StartInfo.WorkingDirectory = Path.GetDirectoryName(path);
-            process.StartInfo.FileName = path;
-            process.EnableRaisingEvents = true;
-            process.Exited += OnProcessExited;
-            process.Start();
-
             if (!String.IsNullOrEmpty(appName))
-                process = Process.GetProcessesByName(appName).First();
+            {
+                Process batProcess = new Process();
+                batProcess.StartInfo.WorkingDirectory = Path.GetDirectoryName(path);
+                batProcess.StartInfo.FileName = path;
+                batProcess.Start();
+
+                Process[] processes = Process.GetProcessesByName(appName);
+                while (processes.Length == 0)
+                {
+                    await Task.Delay(1000);
+                    processes = Process.GetProcessesByName(appName);
+                }
+
+                process = processes.First();
+                process.Exited += OnProcessExited;
+                process.EnableRaisingEvents = true;
+            }
+            else
+            {
+                process = new Process();
+                process.StartInfo.WorkingDirectory = Path.GetDirectoryName(path);
+                process.StartInfo.FileName = path;
+                process.EnableRaisingEvents = true;
+                process.Exited += OnProcessExited;
+                process.Start();
+            }
 
             logger.Info($"{process.ProcessName} started at {DateTime.Now}");
 
-            OnApplicationStarted?.Invoke(this, new EventArgs());
+            OnApplicationStarted?.Invoke(this, process);
         }
 
         private void OnProcessExited(object sender, EventArgs e)
         {
             logger.Info($"{process.ProcessName} exited at {DateTime.Now}");
 
-            OnApplicationExited?.Invoke(sender, e);
+            OnApplicationExited?.Invoke(sender, process);
             process.Exited -= OnProcessExited;
         }
     }

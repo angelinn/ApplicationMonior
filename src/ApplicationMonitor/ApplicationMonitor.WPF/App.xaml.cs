@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -11,7 +12,12 @@ namespace ApplicationMonitor.WPF
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
+    /// 
     public partial class App : Application
     {
+        public App()
+        {
+            LogManager.GetCurrentClassLogger().Info($"Application started at {DateTime.Now}.");
+        }
     }
 }

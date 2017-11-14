@@ -1,4 +1,5 @@
-﻿using MonitoringService;
+using GalaSoft.MvvmLight;
+using MonitoringService;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApplicationMonitor.WPF.ViewModels
+namespace ApplicationMonitor.WPF.ViewModel
 {
-    public class MainViewModel : BaseViewModel
+    public class MainViewModel : ViewModelBase
     {
         private readonly ApplicationMonitoring applicationMonitoring = new ApplicationMonitoring();
 
@@ -42,7 +43,7 @@ namespace ApplicationMonitor.WPF.ViewModels
             set
             {
                 log = value;
-                OnPropertyChanged();
+                RaisePropertyChanged();
             }
         }
 
@@ -56,7 +57,7 @@ namespace ApplicationMonitor.WPF.ViewModels
             set
             {
                 filePath = value;
-                OnPropertyChanged();
+                RaisePropertyChanged();
             }
         }
 
@@ -70,7 +71,7 @@ namespace ApplicationMonitor.WPF.ViewModels
             set
             {
                 appName = value;
-                OnPropertyChanged();
+                RaisePropertyChanged();
             }
         }
 

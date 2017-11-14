@@ -1,4 +1,4 @@
-﻿using ApplicationMonitor.WPF.ViewModels;
+﻿using ApplicationMonitor.WPF.ViewModel;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -24,13 +24,13 @@ namespace ApplicationMonitor.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainViewModel MainViewModel { get; private set; } = new MainViewModel();
+        public MainViewModel MainViewModel { get; private set; }
 
         private System.Windows.Forms.NotifyIcon notifyIcon;
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = MainViewModel;
+            MainViewModel = DataContext as MainViewModel;
             MainViewModel.OnSecondaryProcessStart += OnSecondaryProcessStart;
 
             Application.Current.Exit += OnApplicationExit;

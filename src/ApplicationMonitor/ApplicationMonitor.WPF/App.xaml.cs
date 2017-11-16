@@ -1,4 +1,6 @@
-﻿using NLog;
+﻿using ApplicationMonitor.WPF.Services;
+using GalaSoft.MvvmLight.Ioc;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -18,6 +20,7 @@ namespace ApplicationMonitor.WPF
         public App()
         {
             LogManager.GetCurrentClassLogger().Info($"Application started at {DateTime.Now}.");
+            SimpleIoc.Default.Register<InteractionService>();
         }
     }
 }

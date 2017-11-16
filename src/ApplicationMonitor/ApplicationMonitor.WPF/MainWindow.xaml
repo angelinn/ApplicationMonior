@@ -4,9 +4,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ApplicationMonitor.WPF"
-        DataContext="{Binding MainViewModel, Source={StaticResource Locator}}"
+        xmlns:cv="clr-namespace:ApplicationMonitor.WPF.Converters"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525"
+        Visibility="{Binding IsVisible, Converter={StaticResource BoolToVisibility}}"
+        WindowState="{Binding WindowState, Converter={StaticResource WindowState}}"
+        DataContext="{Binding MainViewModel, Source={StaticResource Locator}}">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closed">
+            <i:InvokeCommandAction Command="{Binding CloseCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
 
     <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -25,7 +35,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <TextBox Text="{Binding FilePath}" />
-                <Button Grid.Column="1" Content="Browse" Margin="5,0,0,0" Click="OnBrowseClicked" />
+                <Button Grid.Column="1" Content="Browse" Margin="5,0,0,0" Command="{Binding BrowseCommand}" />
 
                 <StackPanel Grid.Row="1" Margin="0,10,0,0">
                     <TextBlock Text="Application name (required when running a bat file)" />
@@ -35,8 +45,8 @@
         </GroupBox>
         <TextBox Grid.Row="1" Text="{Binding Log}" IsReadOnly="True" Margin="0,10,0,10" />
         <Grid Grid.Row="2">
-            <Button Content="Start" Height="30" Width="100" Click="OnStartClicked" HorizontalAlignment="Right" />
-            <Button Content="Hide app" Height="30" Width="100" Click="OnMinimizeMonitoredToTrayClicked" HorizontalAlignment="Left" />
+            <Button Content="Start" Height="30" Width="100" Command="{Binding StartCommand}" HorizontalAlignment="Right" />
+            <Button Content="Hide app" Height="30" Width="100" Command="{Binding HideCommand}" HorizontalAlignment="Left" />
         </Grid>
     </Grid>
 
